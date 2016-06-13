@@ -1,0 +1,52 @@
+{% set num_splashes = cookiecutter.num_splashes|int %}
+{% set max_timeout = cookiecutter.max_timeout|int %}
+{% set maxrss = cookiecutter.maxrss_mb | int %}
+{% set mem_limit = "%dm" | format(maxrss * 1.4) %}
+{% set memswap_limit = "%dm" | format(maxrss * 1.8) %}
+{% set tor = cookiecutter.tor | int %}
+{% set verbosity = cookiecutter.splash_verbosity %}
+
+haproxy:
+    image: haproxy:1.6
+    ports:
+        # stats
+        - "8036:8036"
+
+        # splash
+        - "8050:8050"
+    links:
+        {%- for i in range(num_splashes) %}
+        - splash{{i}}
+        {%- endfor %}
+    volumes:
+        - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+
+{%- for i in range(num_splashes) %}
+
+splash{{i}}:
+    image: scrapinghub/splash:{{ cookiecutter.splash_version }}
+    command: --max-timeout {{ max_timeout }} --slots 10 --maxrss {{ maxrss }} --verbosity {{ verbosity }}
+    expose:
+        - 8050
+    mem_limit: {{ mem_limit }}
+    memswap_limit: {{ memswap_limit }}
+    restart: always
+
+    {%- if tor %}
+    links:
+        - tor
+    volumes:
+        - ./proxy-profiles:/etc/splash/proxy-profiles:ro
+        - ./filters:/etc/splash/filters:ro
+    {%- endif %}
+
+{%- endfor %}
+
+
+{% if tor %}
+tor:
+    image: usertaken/tor-socks-proxy:latest
+    expose:
+        - 9050
+    restart: always
+{% endif %}
