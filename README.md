@@ -24,7 +24,7 @@ or (on OS X + homebrew)::
 
 Then generate a folder with config files::
 
-    cookiecutter gh:TeamHG-Memex/aquarium
+    cookiecutter gh:flyingelephantlab/aquarium
 
 With all default options it'll create an ``aquarium`` folder in the current
 path. Go to this folder and start the Splash cluster::
@@ -79,9 +79,8 @@ When generating a config, cookiecutter will ask a bunch of questions.
 .. _request filters: http://splash.readthedocs.org/en/latest/api.html#request-filters
 .. _EasyList: https://easylist.adblockplus.org/en/
 
-Contributing
-------------
-
+Original repository :
+----------------------
 * Source code: https://github.com/TeamHG-Memex/aquarium
 * Bug tracker: https://github.com/TeamHG-Memex/aquarium/issues
 

@@ -1,6 +1,6 @@
 {
     "folder_name": "aquarium",
-    "num_splashes": 3,
+    "num_splashes": 4,
     "splash_version": "latest",
     "splash_verbosity": 1,
     "max_timeout": 3600,
