@@ -10,10 +10,10 @@ haproxy:
     image: haproxy:1.6
     ports:
         # stats
-        - "8036:8036"
+        - "127.0.0.1:8036:8036"
 
         # splash
-        - "8050:8050"
+        - "127.0.0.1:8050:8050"
     links:
         {%- for i in range(num_splashes) %}
         - splash{{i}}
