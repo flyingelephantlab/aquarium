@@ -20,6 +20,7 @@ haproxy:
         {%- endfor %}
     volumes:
         - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    restart: always
 
 {%- for i in range(num_splashes) %}
 
