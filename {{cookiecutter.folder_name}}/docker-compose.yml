@@ -6,48 +6,54 @@
 {% set tor = cookiecutter.tor | int %}
 {% set verbosity = cookiecutter.splash_verbosity %}
 
-haproxy:
-    image: haproxy:1.6
-    ports:
-        # stats
-        - "127.0.0.1:8036:8036"
+version: '2'
 
-        # splash
-        - "127.0.0.1:8050:8050"
-    links:
-        {%- for i in range(num_splashes) %}
-        - splash{{i}}
-        {%- endfor %}
-    volumes:
-        - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    restart: always
+services:
+    haproxy:
+        image: haproxy:1.6
+        ports:
+            # stats
+            - "127.0.0.1:8036:8036"
 
-{%- for i in range(num_splashes) %}
+            # splash
+            - "127.0.0.1:8050:8050"
+        links:
+            {%- for i in range(num_splashes) %}
+            - splash{{i}}
+            {%- endfor %}
+        volumes:
+            - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+        restart: always
 
-splash{{i}}:
-    image: scrapinghub/splash:{{ cookiecutter.splash_version }}
-    command: --max-timeout {{ max_timeout }} --slots 10 --maxrss {{ maxrss }} --verbosity {{ verbosity }} --disable-private-mode
-    expose:
-        - 8050
-    mem_limit: {{ mem_limit }}
-    memswap_limit: {{ memswap_limit }}
-    restart: always
+    {%- for i in range(num_splashes) %}
 
-    {%- if tor %}
-    links:
-        - tor
-    volumes:
-        - ./proxy-profiles:/etc/splash/proxy-profiles:ro
-        - ./filters:/etc/splash/filters:ro
-    {%- endif %}
+    splash{{i}}:
+        image: scrapinghub/splash:{{ cookiecutter.splash_version }}
+        command: --max-timeout {{ max_timeout }} --slots 10 --maxrss {{ maxrss }} --verbosity {{ verbosity }} --disable-private-mode
+        expose:
+            - 8050
+        mem_limit: {{ mem_limit }}
+        memswap_limit: {{ memswap_limit }}
+        restart: always
 
-{%- endfor %}
+        {%- if tor %}
+        links:
+            - tor
+        volumes:
+            - ./proxy-profiles:/etc/splash/proxy-profiles:ro
+            - ./filters:/etc/splash/filters:ro
+        {%- endif %}
+
+    {%- endfor %}
 
 
-{% if tor %}
-tor:
-    image: usertaken/tor-socks-proxy:latest
-    expose:
-        - 9050
-    restart: always
-{% endif %}
+    {% if tor %}
+    tor:
+        image: jess/tor-proxy
+        expose:
+            - 9050
+        logging:
+            driver: "none"
+        restart: always
+
+    {% endif %}
