@@ -10,7 +10,7 @@ version: '2'
 
 services:
     haproxy:
-        image: haproxy:1.6
+        image: haproxy:1.7
         ports:
             # stats
             - "127.0.0.1:8036:8036"
@@ -29,7 +29,7 @@ services:
 
     splash{{i}}:
         image: scrapinghub/splash:{{ cookiecutter.splash_version }}
-        command: --max-timeout {{ max_timeout }} --slots 10 --verbosity {{ verbosity }} --disable-private-mode
+        command: --max-timeout {{ max_timeout }} --slots 10 --verbosity {{ verbosity }} --disable-private-mode --disable-lua-sandbox
         expose:
             - 8050
         mem_limit: {{ mem_limit }}
